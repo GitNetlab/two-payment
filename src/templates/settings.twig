@@ -1,0 +1,41 @@
+{% import '_includes/forms' as forms %}
+
+{{ forms.textField({
+    first: true,
+    label: 'Merchant ID'|t('commerce-two'),
+    name: 'merchantId',
+    value: settings.merchantId
+}) }}
+
+{{ forms.selectField({
+    label: 'Environment'|t('commerce-two'),
+    name: 'environment',
+    options: [
+        {label: 'test', value: 'test'},
+        {label: 'live', value: 'live'}
+    ],
+    value: settings.environment
+}) }}
+
+{{ forms.selectField({
+    label: 'Language'|t('commerce-two'),
+    name: 'language',
+    options: [
+        {label: 'en_US', value: 'en_US'},
+        {label: 'sv_SE', value: 'sv_SE'},
+        {label: 'nb_NO', value: 'nb_NO'}
+    ],
+    value: settings.language
+}) }}
+
+{{ forms.textField({
+    label: 'Test API key'|t('commerce-two'),
+    name: 'testApiKey',
+    value: settings.testApiKey
+}) }}
+
+{{ forms.textField({
+    label: 'Live API key'|t('commerce-two'),
+    name: 'liveApiKey',
+    value: settings.liveApiKey
+}) }}

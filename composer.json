@@ -1,0 +1,44 @@
+{
+    "name": "netlab/commerce-two",
+    "description": "Two integration for Craft CMS",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "commerce",
+        "two"
+    ],
+    "support": {
+        "docs": "https://github.com/GitNetlab/two-payment",
+        "issues": "https://github.com/GitNetlab/two-payment/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Netlab",
+            "homepage": "https://netlab.no"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.7",
+        "craftcms/commerce": "^3.4",
+        "craftcms/commerce-omnipay": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "netlab\\commercetwo\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Commerce Two",
+        "handle": "commerce-two",
+        "developer": "Netlab",
+        "developerUrl": "https://netlab.no",
+        "documentationUrl": "???",
+        "changelogUrl": "???",
+        "class": "netlab\\commercetwo\\CommerceTwo"
+    }
+}
