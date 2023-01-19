@@ -13,7 +13,7 @@ use yii\web\Response;
 
 class CheckoutController extends Controller
 {
-    protected $allowAnonymous = ['index', 'company-search', 'company-address', 'is-company-allowed-for-payment', 'set-company-on-cart', 'set-customer-addresses'];
+    protected array|int|bool $allowAnonymous = ['index', 'company-search', 'company-address', 'is-company-allowed-for-payment', 'set-company-on-cart', 'set-customer-addresses'];
 
     public function actionIndex()
     {
@@ -21,7 +21,7 @@ class CheckoutController extends Controller
         $helper = TwoHelper::getInstance();
         $twoOrder = $helper->getOrder($cart);
 
-        $cart->setAttributes([
+        $cart->setFieldValues([
             'twoOrderStatus'    => $twoOrder->status,
             'twoOrderState'     => $twoOrder->state,
             'twoInvoiceUrl'     => $twoOrder->invoice_url
@@ -45,7 +45,6 @@ class CheckoutController extends Controller
             } else {
                 CommerceTwo::log("Couldn't confirm order at TWO.", Logger::LEVEL_ERROR);
                 exit();
-                //Craft::dd("Couldn't confirm order.");
             }
         } else {
             throw new \Exception($twoOrder);
@@ -105,8 +104,8 @@ class CheckoutController extends Controller
         try {
             $this->requirePostRequest();
             $companyId = $this->request->getParam('companyId', null);
-            $countryCode = $this->request->getParam('countryCode', 'no');
             $companyName = $this->request->getParam('companyName', null);
+            $countryCode = $this->request->getParam('countryCode', 'NO');
 
             if( !$companyId || !$companyName ) {
                 throw new \Exception("Required fields missing");
@@ -149,7 +148,7 @@ class CheckoutController extends Controller
             }
 
             $cart =  Commerce::getInstance()->getCarts()->getCart();
-            $cart->setAttributes([
+            $cart->setFieldValues([
                 'twoCompany', json_encode([
                     'company_name' => $companyName,
                     'country_prefix' => strtoupper($countryCode),
@@ -184,52 +183,81 @@ class CheckoutController extends Controller
             $shippingSameAsBilling = $this->request->getBodyParam('shippingSameAsBilling', false);
 
             $billingCountryISO = $this->request->getBodyParam('billingCountryISO', 'NO');
-            $billingCity = $this->request->getBodyParam('billingCity', false);
-            $billingAddress = $this->request->getBodyParam('billingAddress', false);
+            $billingLocality = $this->request->getBodyParam('billingLocality', false);
+            $billingAddress1 = $this->request->getBodyParam('billingAddress1', false);
             $billingAddress2 = $this->request->getBodyParam('billingAddress2', false);
-            $billingZipCode = $this->request->getBodyParam('billingZipCode', false);
+            $billingPostalCode = $this->request->getBodyParam('billingPostalCode', false);
+            $billingStateCode = $this->request->getBodyParam('billingAdministrativeAreaCode', false);
 
             $shippingCountryISO = $this->request->getBodyParam('shippingCountryISO', 'NO');
-            $shippingCity = $this->request->getBodyParam('shippingCity', false);
-            $shippingAddress = $this->request->getBodyParam('shippingAddress', false);
+            $shippingLocality = $this->request->getBodyParam('shippingLocality', false);
+            $shippingAddress1 = $this->request->getBodyParam('shippingAddress1', false);
             $shippingAddress2 = $this->request->getBodyParam('shippingAddress2', false);
-            $shippingZipCode = $this->request->getBodyParam('shippingZipCode', false);
+            $shippingPostalCode = $this->request->getBodyParam('shippingPostalCode', false);
+            $shippingStateCode = $this->request->getBodyParam('shippingAdministrativeAreaCode', false);
 
+            $billingCountry = Craft::$app->getAddresses()->countryRepository->get($billingCountryISO);
+            $shippingCountry = Craft::$app->getAddresses()->countryRepository->get($shippingCountryISO);
 
-            $billingCountry = \craft\commerce\Plugin::getInstance()
-                ->getCountries()
-                ->getCountryByIso($billingCountryISO);
+            $billingState = false;
+            $shippingState = false;
 
-            $shippingCountry = \craft\commerce\Plugin::getInstance()
-                ->getCountries()
-                ->getCountryByIso($shippingCountryISO);
+            if( $billingStateCode && $billingCountryISO ) {
+                $billingStates = Craft::$app->getAddresses()->subdivisionRepository->getList([$billingCountryISO]);
+                foreach ($billingStates as $code => $name) {
+                    if( strtolower($code) === strtolower($billingStateCode) ) {
+                        $billingState = $name;
+                        break;
+                    }
+                }
+            }
+
+            if( $shippingStateCode && $shippingCountryISO ) {
+                $shippingStates = Craft::$app->getAddresses()->subdivisionRepository->getList([$shippingCountryISO]);
+                foreach ($shippingStates as $code => $name) {
+                    if( strtolower($code) === strtolower($shippingStateCode) ) {
+                        $shippingState = $name;
+                        break;
+                    }
+                }
+            }
 
             $billingData = [
                 'firstName' => $firstName,
                 'lastName' => $lastName,
-                'city' => $billingCity,
-                'address1' => $billingAddress,
-                'address2' => $billingAddress2,
-                'zipCode' => $billingZipCode,
+                'locality' => $billingLocality,
+                'addressLine1' => $billingAddress1,
+                'addressLine2' => $billingAddress2 ?: '',
+                'postalCode' => $billingPostalCode,
                 'phone' => $phone,
-                'countryId' => $billingCountry->id,
+                'countryCode' => $billingCountry->getCountryCode() ?? ''
             ];
+
+            if( $billingState ) {
+                $billingData['administrativeArea'] = $billingState;
+            }
+
 
             $shippingData = [
                 'firstName' => $firstName,
                 'lastName' => $lastName,
-                'city' => $shippingCity,
-                'address1' => $shippingAddress,
-                'address2' => $shippingAddress2,
-                'zipCode' => $shippingZipCode,
+                'locality' => $shippingLocality,
+                'addressLine1' => $shippingAddress1,
+                'addressLine2' => $shippingAddress2 ?: '',
+                'postalCode' => $shippingPostalCode,
                 'phone' => $phone,
-                'countryId' => $shippingCountry->id,
+                'countryCode' => $shippingCountry->getCountryCode() ?? ''
             ];
 
-            $commerce = craft\commerce\Plugin::getInstance();
-            $customer = $commerce->getCustomers()->getCustomer();
-            $primaryBilling = $customer->getPrimaryBillingAddress();
-            $primaryShipping = $customer->getPrimaryShippingAddress();
+            if( $shippingState ) {
+                $shippingData['administrativeArea'] = $shippingState;
+            }
+
+            $customer = Craft::$app->getUser()->getIdentity();
+
+            $primaryBilling = $cart->getBillingAddress();
+            $primaryShipping = $cart->getShippingAddress();
+
 
             if( $cart->getEmail() !== $email ) {
                 $cart->setEmail($email);
@@ -237,6 +265,7 @@ class CheckoutController extends Controller
 
             if( $primaryBilling ) {
                 $primaryBilling->setAttributes($billingSameAsShipping ? $shippingData : $billingData);
+                Craft::$app->elements->saveElement($primaryBilling);
                 $cart->setBillingAddress($primaryBilling);
             } else {
                 $cart->setBillingAddress($billingSameAsShipping ? $shippingData : $billingData);
@@ -244,12 +273,17 @@ class CheckoutController extends Controller
 
             if( $primaryShipping ) {
                 $primaryShipping->setAttributes($shippingSameAsBilling ? $billingData : $shippingData);
+                Craft::$app->elements->saveElement($primaryShipping);
                 $cart->setShippingAddress($primaryShipping);
             } else {
                 $cart->setShippingAddress($shippingSameAsBilling ? $billingData : $shippingData);
             }
 
+            $cart->setCustomer($customer);
             $saved = Craft::$app->elements->saveElement($cart);
+            if( !$saved ) {
+                return $this->asJson(['success' => false, 'errors' => $cart->getErrors()]);
+            }
             return $this->asJson(['success' => $saved]);
         } catch (\Exception $e) {
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);

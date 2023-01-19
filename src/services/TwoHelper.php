@@ -156,7 +156,7 @@ class TwoHelper extends Component
                 return $intent;
             }
 
-            $cart->setAttributes(['twoIsEnabledForCheckout' => $intent->approved]);
+            $cart->setFieldValue('twoIsEnabledForCheckout', $intent->approved);
 
             $cart_saved = Craft::$app->elements->saveElement($cart);
             if(!$cart_saved) {
@@ -191,7 +191,7 @@ class TwoHelper extends Component
 
             $createOrderResponse = json_decode($httpResponse->getBody()->getContents());
 
-            $cart->setAttributes([
+            $cart->setFieldValues([
                 'twoOrderId'        => $createOrderResponse->id,
                 'twoOrderStatus'    => $createOrderResponse->status,
                 'twoOrderState'     => $createOrderResponse->state,
@@ -232,7 +232,7 @@ class TwoHelper extends Component
 
             if( $resp->getStatusCode() === 200 ) {
                 $responseBody = json_decode($resp->getBody()->getContents());
-                $cart->setAttributes([
+                $cart->setFieldValues([
                     'twoOrderStatus' => $responseBody->status,
                     'twoOrderState' => $responseBody->state,
                     'twoInvoiceUrl' => $responseBody->invoice_url
@@ -288,7 +288,7 @@ class TwoHelper extends Component
 
             if( in_array($resp->getStatusCode(), [200, 202]) ) {
                 $responseBody = json_decode($resp->getBody()->getContents());
-                $cart->setAttributes([
+                $cart->setFieldValues([
                     'twoOrderStatus' => $responseBody->status,
                     'twoOrderState' => $responseBody->state
                 ]);
@@ -358,13 +358,13 @@ class TwoHelper extends Component
      * @throws \yii\base\Exception
      */
     public function saveOrderDataToCart(Order $cart, $data) {
-        $cart->setAttributes([
+        $cart->setFieldValues([
             'twoOrderId'        => $data->id,
             'twoOrderStatus'    => $data->status,
             'twoOrderState'     => $data->state
         ]);
 
-        $cart_saved = Craft::$app->elements->saveElement($cart);
+        $cart_saved = Craft::$app->getElements()->saveElement($cart);
         if(!$cart_saved) {
             throw new \Exception("Unable to save cart object: ". json_encode($cart->getErrors()));
         }

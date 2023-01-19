@@ -1,6 +1,6 @@
 <?php
 /**
- * Commerce Two plugin for Craft CMS 3.x
+ * Commerce Two plugin for Craft CMS 4.x
  *
  * Two integration for Craft CMS
  *
@@ -18,6 +18,7 @@ use craft\commerce\services\Gateways;
 use craft\db\Query;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\fieldlayoutelements\CustomField;
 use craft\fields\Lightswitch;
 use craft\fields\PlainText;
 use craft\helpers\FieldHelper;
@@ -53,7 +54,7 @@ use craft\commerce\omnipay\events\SendPaymentRequestEvent;
  * For the purposes of the plugin docs, we’re going to assume that you know PHP and SQL,
  * as well as some semi-advanced concepts like object-oriented programming and PHP namespaces.
  *
- * https://docs.craftcms.com/v3/extend/
+ * https://craftcms.com/docs/4.x/extend/
  *
  * @author    Netlab
  * @package   CommerceTwo
@@ -81,21 +82,21 @@ class CommerceTwo extends Plugin
      *
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     /**
      * Set to `true` if the plugin should have a settings view in the control panel.
      *
      * @var bool
      */
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     /**
      * Set to `true` if the plugin should have its own section (main nav item) in the control panel.
      *
      * @var bool
      */
-    public $hasCpSection = false;
+    public bool $hasCpSection = false;
 
     // Public Methods
     // =========================================================================
@@ -201,7 +202,7 @@ class CommerceTwo extends Plugin
     // Protected Methods
     // =========================================================================
 
-    protected function createSettingsModel() : BaseObject
+    protected function createSettingsModel() : ?\craft\base\Model
     {
         return new Settings();
     }
@@ -269,12 +270,6 @@ class CommerceTwo extends Plugin
             Craft::$app->fields->saveGroup($fieldGroup);
         }
 
-        $group = (new Query())
-            ->select('id')
-            ->from(Craft::$app->db->tablePrefix."fieldgroups")
-            ->where(['name' => $this->fieldGroupName])
-            ->one();
-
         $fields = [];
 
         foreach ($this->fields as $field) {
@@ -286,7 +281,7 @@ class CommerceTwo extends Plugin
 
             if( $field['type'] === 'text' ) {
                 $newField = new PlainText([
-                    'groupId' => $group['id'],
+                    'groupId' => $fieldGroup['id'],
                     'name' => $field['name'],
                     'handle' => $field['handle'],
                     'required' => false,
@@ -296,7 +291,7 @@ class CommerceTwo extends Plugin
                 ]);
             } else if( $field['type'] === 'bool' ) {
                 $newField = new Lightswitch([
-                    'groupId' => $group['id'],
+                    'groupId' => $fieldGroup['id'],
                     'name' => $field['name'],
                     'handle' => $field['handle'],
                     'required' => false,
@@ -325,10 +320,20 @@ class CommerceTwo extends Plugin
         if( !$tab ) {
             $tab = new FieldLayoutTab();
             $tab->name = $this->fieldGroupName;
+            $tab->setLayout($fieldLayout);
         }
 
-        if( empty($tab->getFields() ) && count($fields) ) {
-            $tab->setFields($fields);
+        if( empty($tab->getElements() ) && count($fields) ) {
+            $elements = array_map(function($field) {
+                return [
+                    'type' => CustomField::class,
+                    'fieldUid' => $field->uid,
+                    'required' => false,
+
+                ];
+            }, $fields);
+
+            $tab->setElements($elements);
             $tab->sortOrder = count($currentTabs);
             $fieldLayout->setTabs(array_merge($currentTabs,[$tab]));
 

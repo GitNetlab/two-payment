@@ -17,7 +17,7 @@ class AuthorizeResponse extends AbstractResponse implements RedirectResponseInte
         $this->statusCode = $statusCode;
 
         if( $this->isSuccessful() ) {
-            $cart->setAttributes([
+            $cart->setFieldValues([
                 'twoOrderStatus' => $data->status,
                 'twoOrderState' => $data->state,
                 'twoInvoiceUrl' => $data->invoice_url

@@ -82,25 +82,37 @@ class BaseRequest extends AbstractRequest
     }
 
     protected function getBillingAddress() : array {
-        return [
-            'city' => $this->cart->billingAddress->city,
-            'country' => $this->cart->billingAddress->getCountryIso(),
+        $address = [
+            'city' => $this->cart->billingAddress->getLocality(),
+            'country' => $this->cart->billingAddress->getCountryCode(),
             'organization_name' => json_decode($this->cart->twoCompany)->company_name,
-            'postal_code' => $this->cart->billingAddress->zipCode,
-            'street_address' => $this->cart->billingAddress->address1,
-            'region' => $this->cart->billingAddress->getStateText()
+            'postal_code' => $this->cart->billingAddress->getPostalCode(),
+            'street_address' => $this->cart->billingAddress->getAddressLine1(),
+            'region' => $this->cart->billingAddress->getLocality()
         ];
+
+        if( !empty($this->cart->billingAddress->getAdministrativeArea()) && !empty($this->cart->billingAddress->getCountryCode()) ) {
+            $state = \Craft::$app->getAddresses()->subdivisionRepository->get($this->cart->billingAddress->getAdministrativeArea(), [$this->cart->billingAddress->getCountryCode()]);
+            $address['region'] = $state->getName();
+        }
+        return $address;
     }
 
     protected function getShippingAddress() : array {
-        return [
-            'city' => $this->cart->shippingAddress->city,
-            'country' => $this->cart->shippingAddress->getCountryIso(),
+        $address = [
+            'city' => $this->cart->shippingAddress->getLocality(),
+            'country' => $this->cart->shippingAddress->getCountryCode(),
             'organization_name' => json_decode($this->cart->twoCompany)->company_name,
-            'postal_code' => $this->cart->shippingAddress->zipCode,
-            'street_address' => $this->cart->shippingAddress->address1,
-            'region' => $this->cart->shippingAddress->getStateText()
+            'postal_code' => $this->cart->shippingAddress->getPostalCode(),
+            'street_address' => $this->cart->shippingAddress->getAddressLine1(),
+            'region' => $this->cart->shippingAddress->getLocality()
         ];
+
+        if( !empty($this->cart->shippingAddress->getAdministrativeArea()) && !empty($this->cart->shippingAddress->getCountryCode()) ) {
+            $state = \Craft::$app->getAddresses()->subdivisionRepository->get($this->cart->shippingAddress->getAdministrativeArea(), [$this->cart->shippingAddress->getCountryCode()]);
+            $address['region'] = $state->getName();
+        }
+        return $address;
     }
 
     public function getEndpoint() {
