@@ -2,7 +2,6 @@
     "name": "netlab/commerce-two",
     "description": "Two integration for Craft CMS",
     "type": "craft-plugin",
-    "version": "2.0.0",
     "keywords": [
         "craft",
         "cms",
