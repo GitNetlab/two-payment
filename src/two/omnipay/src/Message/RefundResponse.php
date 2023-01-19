@@ -17,7 +17,7 @@ class RefundResponse extends AbstractResponse implements RedirectResponseInterfa
         $this->statusCode = $statusCode;
 
         if( $this->isSuccessful() ) {
-            $order->setAttributes(['twoCreditNoteUrl' => $data->credit_note_url]);
+            $order->setFieldValue('twoCreditNoteUrl', $data->credit_note_url);
             $saved = \Craft::$app->elements->saveElement($order);
         }
 

@@ -17,7 +17,7 @@ class CaptureResponse extends AbstractResponse implements RedirectResponseInterf
         $this->statusCode = $statusCode;
 
         if( $this->isSuccessful() ) {
-            $order->setAttributes(['twoInvoiceUrl' => $data->invoice_url]);
+            $order->setFieldValue('twoInvoiceUrl', $data->invoice_url);
             $saved = \Craft::$app->elements->saveElement($order);
         }
     }

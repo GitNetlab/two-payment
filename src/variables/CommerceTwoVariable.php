@@ -23,7 +23,7 @@ class CommerceTwoVariable
     public function setCompanyOnCart(string $companyName, string|int $companyId, string $countryCode = 'no') : bool {
         try {
             $cart =  Commerce::getInstance()->getCarts()->getCart();
-            $cart->setAttributes(['twoCompany' => [
+            $cart->setFieldValues(['twoCompany' => [
                 'company_name' => $companyName,
                 'country_prefix' => strtoupper($countryCode),
                 'organization_number' => $companyId,
