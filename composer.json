@@ -36,8 +36,8 @@
         "handle": "commerce-two",
         "developer": "Netlab",
         "developerUrl": "https://netlab.no",
-        "documentationUrl": "???",
-        "changelogUrl": "???",
+        "documentationUrl": "https://github.com/GitNetlab/two-payment/blob/1.0.0/README.md",
+        "changelogUrl": "https://github.com/GitNetlab/two-payment/blob/1.0.0/CHANGELOG.md",
         "class": "netlab\\commercetwo\\CommerceTwo"
     }
 }
