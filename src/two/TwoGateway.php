@@ -25,13 +25,13 @@ class TwoGateway extends OffsiteGateway {
     public function createGateway(): AbstractGateway {
         $pluginSettings = CommerceTwo::getInstance()->getSettings();
         $gateway = static::createOmnipayGateway($this->getGatewayClassName());
-        $gateway->setMerchantId($pluginSettings->merchantId);
+        $gateway->setMerchantId($pluginSettings->getMerchantId());
 
         if( $pluginSettings->environment !== 'live' ) {
-            $gateway->setPassword( $pluginSettings->testApiKey );
+            $gateway->setPassword( $pluginSettings->getTestApiKey() );
             $gateway->setTestMode(true);
         } else {
-            $gateway->setPassword( $pluginSettings->liveApiKey );
+            $gateway->setPassword( $pluginSettings->getLiveApiKey() );
         }
 
         return $gateway;
