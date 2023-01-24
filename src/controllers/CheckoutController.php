@@ -43,11 +43,12 @@ class CheckoutController extends Controller
                 }
                 return $this->response->redirect($cart->returnUrl);
             } else {
-                CommerceTwo::log("Couldn't confirm order at TWO.", Logger::LEVEL_ERROR);
+                CommerceTwo::log("Couldn't confirm order at TWO. Order ID: ". $cart->getId(), Logger::LEVEL_ERROR);
                 exit();
             }
         } else {
-            throw new \Exception($twoOrder);
+            CommerceTwo::log("Unexpected order status for order ID: ". $cart->getId(), Logger::LEVEL_ERROR);
+            exit();
         }
     }
 
