@@ -22,7 +22,7 @@ class CreateOrderRequest extends BaseRequest
             $data['buyer'] = TwoHelper::getInstance()->getBuyerObject($this->cart);
             $data['currency'] = $this->cart->getPaymentCurrency();
             $data['gross_amount'] = (string)$this->cart->getTotal();
-            $data['net_amount'] = (string)($this->cart->getTotal() - ($this->cart->totalTax + $this->cart->totalDiscount + $this->cart->totalShippingCost));
+            $data['net_amount'] = (string)($this->cart->getTotal() - $this->cart->totalTax);
             $data['tax_amount'] = (string)$this->cart->getTotalTax();
             $data['line_items'] = $this->getLineItems($this->cart);
             $data['invoice_type'] = 'DIRECT_INVOICE';

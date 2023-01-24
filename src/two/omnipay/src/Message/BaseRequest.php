@@ -64,14 +64,31 @@ class BaseRequest extends AbstractRequest
                     'name' => $lineItem->getDescription(),
                     'quantity' => (float)$lineItem->qty,
                     'description' => $lineItem->getDescription() . ' - '. $lineItem->getSku(),
+                    'discount' => (string)($lineItem->getDiscount() * -1),
                     'gross_amount' => (string)$lineItem->getTotal(),
-                    'net_amount' => (string)($lineItem->getPurchasable()->getPrice() * $lineItem->qty),
+                    'net_amount' => (string)($lineItem->getPurchasable()->getPrice() * $lineItem->qty + $lineItem->getDiscount()),
                     'quantity_unit' => 'pcs',
                     'tax_amount' => (string)($taxCategory ? $lineItem->getTax() : 0),
                     'tax_class_name' => $taxCategory ? $taxCategory->name :  'NO TAX',
                     'tax_rate' => (string)(count($taxRates) ? number_format($taxRates[0]->rate, 3) : 0),
                     'type' => 'PHYSICAL',
                     'unit_price' => (string)$lineItem->getPurchasable()->getPrice()
+                ];
+            }
+            if( $cart->getTotalShippingCost() ) {
+                $lineItems[] = [
+                    'name' => 'Shipping',
+                    'quantity' => 1,
+                    'description' => 'Shipping fee',
+                    'discount' => '0',
+                    'gross_amount' => (string)$cart->getTotalShippingCost(),
+                    'net_amount' => (string)$cart->getTotalShippingCost(),
+                    'quantity_unit' => 'pcs',
+                    'tax_amount' => '0',
+                    'tax_class_name' => 'NO TAX',
+                    'tax_rate' => '0',
+                    'type' => 'SHIPPING_FEE',
+                    'unit_price' => (string)$cart->getTotalShippingCost()
                 ];
             }
         } catch (\Exception $e) {
