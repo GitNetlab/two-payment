@@ -64,15 +64,15 @@ class BaseRequest extends AbstractRequest
                     'name' => $lineItem->getDescription(),
                     'quantity' => (float)$lineItem->qty,
                     'description' => $lineItem->getDescription() . ' - '. $lineItem->getSku(),
-                    'discount' => (string)($lineItem->getDiscount() * -1),
                     'gross_amount' => (string)$lineItem->getTotal(),
-                    'net_amount' => (string)($lineItem->getPurchasable()->getPrice() * $lineItem->qty + $lineItem->getDiscount()),
+                    'net_amount' => (string)($lineItem->getTotal() - $lineItem->getTax()),
+                    'discount' => (string)($lineItem->getPrice() * $lineItem->qty - ($lineItem->getTotal() - $lineItem->getTax())),
                     'quantity_unit' => 'pcs',
                     'tax_amount' => (string)($taxCategory ? $lineItem->getTax() : 0),
                     'tax_class_name' => $taxCategory ? $taxCategory->name :  'NO TAX',
                     'tax_rate' => (string)(count($taxRates) ? number_format($taxRates[0]->rate, 3) : 0),
                     'type' => 'PHYSICAL',
-                    'unit_price' => (string)$lineItem->getPurchasable()->getPrice()
+                    'unit_price' => (string)$lineItem->getPrice()
                 ];
             }
             if( $cart->getTotalShippingCost() ) {
@@ -80,9 +80,9 @@ class BaseRequest extends AbstractRequest
                     'name' => 'Shipping',
                     'quantity' => 1,
                     'description' => 'Shipping fee',
-                    'discount' => '0',
                     'gross_amount' => (string)$cart->getTotalShippingCost(),
                     'net_amount' => (string)$cart->getTotalShippingCost(),
+                    'discount' => '0',
                     'quantity_unit' => 'pcs',
                     'tax_amount' => '0',
                     'tax_class_name' => 'NO TAX',

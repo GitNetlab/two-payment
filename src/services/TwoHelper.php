@@ -298,7 +298,6 @@ class TwoHelper extends Component
                 if(!$cart_saved) {
                     throw new \Exception("Unable to save cart object: ". json_encode($cart->getErrors()));
                 }
-
                 // Set authorize transaction
                 $transaction = Plugin::getInstance()->transactions->createTransaction($cart);
                 $transaction->status = \craft\commerce\records\Transaction::STATUS_SUCCESS;
@@ -456,13 +455,30 @@ class TwoHelper extends Component
                     'quantity' => (float)$lineItem->qty,
                     'description' => $lineItem->getDescription() . ' - '. $lineItem->getSku(),
                     'gross_amount' => (string)$lineItem->getTotal(),
-                    'net_amount' => (string)($lineItem->getPurchasable()->getPrice() * $lineItem->qty),
+                    'net_amount' => (string)($lineItem->getTotal() - $lineItem->getTax()),
+                    'discount' => (string)($lineItem->getPrice() - ($lineItem->getTotal() - $lineItem->getTax())),
                     'quantity_unit' => 'pcs',
                     'tax_amount' => (string)($taxCategory ? $lineItem->getTax() : 0),
                     'tax_class_name' => $taxCategory ? $taxCategory->name :  'NO TAX',
                     'tax_rate' => (string)(count($taxRates) ? number_format($taxRates[0]->rate, 3) : 0),
                     'type' => 'PHYSICAL',
-                    'unit_price' => (string)$lineItem->getPurchasable()->getPrice()
+                    'unit_price' => (string)$lineItem->getPrice()
+                ];
+            }
+            if( $cart->getTotalShippingCost() ) {
+                $lineItems[] = [
+                    'name' => 'Shipping',
+                    'quantity' => 1,
+                    'description' => 'Shipping fee',
+                    'gross_amount' => (string)$cart->getTotalShippingCost(),
+                    'net_amount' => (string)$cart->getTotalShippingCost(),
+                    'discount' => '0',
+                    'quantity_unit' => 'pcs',
+                    'tax_amount' => '0',
+                    'tax_class_name' => 'NO TAX',
+                    'tax_rate' => '0',
+                    'type' => 'SHIPPING_FEE',
+                    'unit_price' => (string)$cart->getTotalShippingCost()
                 ];
             }
         } catch (\Exception $e) {
