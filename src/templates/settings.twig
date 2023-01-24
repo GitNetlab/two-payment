@@ -1,13 +1,16 @@
 {% import '_includes/forms' as forms %}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     first: true,
+    id: 'merchantId',
     label: 'Merchant ID'|t('commerce-two'),
     name: 'merchantId',
+    suggestEnvVars: true,
     value: settings.merchantId
 }) }}
 
 {{ forms.selectField({
+    id: 'environment',
     label: 'Environment'|t('commerce-two'),
     name: 'environment',
     options: [
@@ -18,6 +21,7 @@
 }) }}
 
 {{ forms.selectField({
+    id: 'language',
     label: 'Language'|t('commerce-two'),
     name: 'language',
     options: [
@@ -28,14 +32,18 @@
     value: settings.language
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
+    id: 'testApiKey',
     label: 'Test API key'|t('commerce-two'),
     name: 'testApiKey',
+    suggestEnvVars: true,
     value: settings.testApiKey
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
+    id: 'liveApiKey',
     label: 'Live API key'|t('commerce-two'),
     name: 'liveApiKey',
+    suggestEnvVars: true,
     value: settings.liveApiKey
 }) }}
