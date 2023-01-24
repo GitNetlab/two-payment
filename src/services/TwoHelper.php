@@ -244,7 +244,7 @@ class TwoHelper extends Component
                 }
 
                 // Set capture transaction
-                $transaction = Plugin::getInstance()->transactions->createTransaction($cart);
+                $transaction = Plugin::getInstance()->transactions->createTransaction(null, $cart->getLastTransaction());
                 $transaction->status = \craft\commerce\records\Transaction::STATUS_SUCCESS;
                 $transaction->type = \craft\commerce\records\Transaction::TYPE_CAPTURE;
                 $transaction->response = $responseBody;
