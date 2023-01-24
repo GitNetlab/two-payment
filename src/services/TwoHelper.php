@@ -66,7 +66,7 @@ class TwoHelper extends Component
         $this->pluginSettings = CommerceTwo::getInstance()->getSettings();
         $this->client = new Client();
         $this->endpoint = $this->pluginSettings->environment !== 'live' ? $this->testEndpoint : $this->liveEndpoint;
-        $this->password = $this->pluginSettings->environment !== 'live' ? $this->pluginSettings->testApiKey : $this->pluginSettings->liveApiKey;
+        $this->password = $this->pluginSettings->environment !== 'live' ? $this->pluginSettings->getTestApiKey() : $this->pluginSettings->getLiveApiKey();
     }
 
     // https://api-docs.two.inc/openapi/search-api/#operation/get-search-company-name
@@ -242,7 +242,7 @@ class TwoHelper extends Component
                 if(!$cart_saved) {
                     throw new \Exception("Unable to save cart object: ". json_encode($cart->getErrors()));
                 }
-                
+
                 // Set capture transaction
                 $transaction = Plugin::getInstance()->transactions->createTransaction($cart);
                 $transaction->status = \craft\commerce\records\Transaction::STATUS_SUCCESS;
@@ -251,7 +251,7 @@ class TwoHelper extends Component
                 $transaction->reference = 'Two Inc.';
                 Plugin::getInstance()->transactions->saveTransaction($transaction);
                 $cart->updateOrderPaidInformation();
-                
+
                 return true;
             } else {
                 throw new \Exception("Wrong status code from Two! ". json_encode( $resp->getBody()->getContents() ));
@@ -394,7 +394,7 @@ class TwoHelper extends Component
             $data['currency'] = $cart->getPaymentCurrency();
             $data['gross_amount'] = (string)$cart->getTotal();
             $data['line_items'] = $this->getLineItems($cart);
-            $data['merchant_id'] = (string)$this->pluginSettings->merchantId;
+            $data['merchant_id'] = (string)$this->pluginSettings->getMerchantId();
         } catch (\Exception $e) {
             CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
             throw $e;
@@ -418,7 +418,7 @@ class TwoHelper extends Component
             $data['tax_amount'] = (string)$cart->getTotalTax();
             $data['line_items'] = $this->getLineItems($cart);
             $data['invoice_type'] = 'DIRECT_INVOICE';
-            $data['merchant_id'] = $this->pluginSettings->merchantId;;
+            $data['merchant_id'] = $this->pluginSettings->getMerchantId();
             $data['merchant_order_id'] = (string)$cart->getId();
             $data['merchant_urls'] = [
                 'merchant_cancel_order_url' => $cart->cancelUrl,
