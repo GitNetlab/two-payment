@@ -28,7 +28,7 @@ This plugin enables integration with [Two](https://www.two.inc/) through a custo
 ## Configuration
 
 The following steps must be taken to configure the plugin:
-1. Go to the plugin settings page (admin/settings/plugins/commerce-two) and add your API credentials (Merchant ID, API keys, select the appropriate environment, and language for invoice generation).
+1. Go to the plugin settings page (admin/settings/plugins/commerce-two) and add your API credentials (Merchant ID, API keys, select the appropriate environment, and language for invoice generation). Consider using environment variables for storing sensitive information.
 2. Create a new payment gateway in Craft Commerce (admin/commerce/settings/gateways) and set Two as the gateway. The plugin supports both Authorize Only and Purchase options. Note that for the Authorize Only option, you will need to manually capture the payment for each order.
 3. Create a new field with the handle "phone" and add it to the User Address field layout (admin/settings/users/address-fields).
 
