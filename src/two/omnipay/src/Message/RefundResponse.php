@@ -27,4 +27,14 @@ class RefundResponse extends AbstractResponse implements RedirectResponseInterfa
     {
         return $this->statusCode === 201;
     }
+
+    public function getTransactionReference()
+    {
+        return 'Two Inc.';
+    }
+
+    public function getCode()
+    {
+        return $this->statusCode;
+    }
 }

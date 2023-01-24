@@ -31,10 +31,10 @@ class CaptureRequest extends BaseRequest
             $httpResponse = $this->httpClient->request('POST', $url, [
                 'Content-Type' => 'application/json',
                 'X-API-KEY' => $data['password']
-            ]);  
+            ]);
         } catch (\Exception $e) {
             CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
-            throw $e; 
+            throw $e;
         }
         return $this->response = new CaptureResponse($this, json_decode($httpResponse->getBody()->getContents()), $httpResponse->getStatusCode(), $this->order);
     }

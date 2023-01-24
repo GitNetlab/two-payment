@@ -48,4 +48,9 @@ class CreateOrderResponse extends AbstractResponse implements RedirectResponseIn
     {
         return null;
     }
+
+    public function getTransactionReference()
+    {
+        return 'Two Inc.';
+    }
 }

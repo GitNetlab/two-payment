@@ -34,4 +34,14 @@ class AuthorizeResponse extends AbstractResponse implements RedirectResponseInte
     {
         return in_array($this->statusCode, [200, 202]);
     }
+
+    public function getTransactionReference()
+    {
+        return 'Two Inc.';
+    }
+
+    public function getCode()
+    {
+        return $this->statusCode;
+    }
 }
