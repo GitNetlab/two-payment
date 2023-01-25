@@ -40,4 +40,9 @@ class TwoGateway extends OffsiteGateway {
     protected function getGatewayClassName() : ?string {
         return '\\'.OmnipayTwoGateway::class;
     }
+
+    public function supportsPartialRefund(): bool
+    {
+        return false;
+    }
 }
