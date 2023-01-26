@@ -230,7 +230,6 @@ class CheckoutController extends Controller
                 'addressLine1' => $billingAddress1,
                 'addressLine2' => $billingAddress2 ?: '',
                 'postalCode' => $billingPostalCode,
-                'phone' => $phone,
                 'countryCode' => $billingCountry->getCountryCode() ?? ''
             ];
 
@@ -246,7 +245,6 @@ class CheckoutController extends Controller
                 'addressLine1' => $shippingAddress1,
                 'addressLine2' => $shippingAddress2 ?: '',
                 'postalCode' => $shippingPostalCode,
-                'phone' => $phone,
                 'countryCode' => $shippingCountry->getCountryCode() ?? ''
             ];
 
@@ -259,26 +257,29 @@ class CheckoutController extends Controller
             $primaryBilling = $cart->getBillingAddress();
             $primaryShipping = $cart->getShippingAddress();
 
-
             if( $cart->getEmail() !== $email ) {
                 $cart->setEmail($email);
             }
 
-            if( $primaryBilling ) {
-                $primaryBilling->setAttributes($billingSameAsShipping ? $shippingData : $billingData);
-                Craft::$app->elements->saveElement($primaryBilling);
-                $cart->setBillingAddress($primaryBilling);
-            } else {
+            if( !$primaryBilling ) {
                 $cart->setBillingAddress($billingSameAsShipping ? $shippingData : $billingData);
+                $primaryBilling = $cart->getBillingAddress();
+            } else {
+                $primaryBilling->setAttributes($billingSameAsShipping ? $shippingData : $billingData);
             }
 
-            if( $primaryShipping ) {
-                $primaryShipping->setAttributes($shippingSameAsBilling ? $billingData : $shippingData);
-                Craft::$app->elements->saveElement($primaryShipping);
-                $cart->setShippingAddress($primaryShipping);
-            } else {
+            $primaryBilling->setFieldValue('phone', $phone);
+            Craft::$app->elements->saveElement($primaryBilling);
+
+            if( !$primaryShipping ) {
                 $cart->setShippingAddress($shippingSameAsBilling ? $billingData : $shippingData);
+                $primaryShipping = $cart->getShippingAddress();
+            } else {
+                $primaryShipping->setAttributes($shippingSameAsBilling ? $billingData : $shippingData);
             }
+
+            $primaryShipping->setFieldValue('phone', $phone);
+            Craft::$app->elements->saveElement($primaryShipping);
 
             $cart->setCustomer($customer);
             $saved = Craft::$app->elements->saveElement($cart);
