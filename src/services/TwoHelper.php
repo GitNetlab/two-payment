@@ -374,8 +374,8 @@ class TwoHelper extends Component
             'company' => (array)json_decode($cart->twoCompany),
             'representative' => [
                 'email' => $cart->getEmail(),
-                'first_name' => $cart->billingAddress->firstName ?? 'John',
-                'last_name' => $cart->billingAddress->lastName ?? 'Doe',
+                'first_name' => $cart->billingAddress->getGivenName() ?? 'John',
+                'last_name' => $cart->billingAddress->getFamilyName() ?? 'Doe',
                 'phone_number' => $cart->billingAddress->phone ?? '1234567'
             ]
         ];

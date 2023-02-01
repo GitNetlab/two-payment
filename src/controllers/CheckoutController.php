@@ -224,6 +224,7 @@ class CheckoutController extends Controller
             }
 
             $billingData = [
+                'fullName' => "$firstName $lastName",
                 'firstName' => $firstName,
                 'lastName' => $lastName,
                 'locality' => $billingLocality,
@@ -239,6 +240,7 @@ class CheckoutController extends Controller
 
 
             $shippingData = [
+                'fullName' => "$firstName $lastName",
                 'firstName' => $firstName,
                 'lastName' => $lastName,
                 'locality' => $shippingLocality,
