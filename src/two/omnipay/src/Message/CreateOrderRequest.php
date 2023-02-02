@@ -19,6 +19,8 @@ class CreateOrderRequest extends BaseRequest
     {
         $data = [];
         try {
+            $baseUrl = Craft::$app->sites->currentSite->getBaseUrl();
+
             $data['buyer'] = TwoHelper::getInstance()->getBuyerObject($this->cart);
             $data['currency'] = $this->cart->getPaymentCurrency();
             $data['gross_amount'] = (string)$this->cart->getTotal();
@@ -29,11 +31,11 @@ class CreateOrderRequest extends BaseRequest
             $data['merchant_id'] = $this->getMerchantId();
             $data['merchant_order_id'] = (string)$this->cart->getId();
             $data['merchant_urls'] = [
-                'merchant_cancel_order_url' => $this->cart->cancelUrl,
-                'merchant_confirmation_url' => Craft::$app->sites->currentSite->getBaseUrl() . 'commerce-two/return',
-                'merchant_edit_order_url' => $this->cart->cancelUrl,
-                'merchant_invoice_url' => $this->cart->returnUrl,
-                'merchant_order_verification_failed_url' => Craft::$app->sites->currentSite->getBaseUrl() . 'commerce-two/return',
+                'merchant_cancel_order_url' => $baseUrl . $this->cart->cancelUrl,
+                'merchant_confirmation_url' => $baseUrl . 'commerce-two/return',
+                'merchant_edit_order_url' => $baseUrl . $this->cart->cancelUrl,
+                'merchant_invoice_url' => $baseUrl . $this->cart->returnUrl,
+                'merchant_order_verification_failed_url' => $baseUrl . 'commerce-two/return',
             ];
             $data['billing_address'] = $this->getBillingAddress();
             $data['shipping_address'] = $this->getShippingAddress();
