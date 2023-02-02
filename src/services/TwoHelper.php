@@ -410,6 +410,8 @@ class TwoHelper extends Component
     private function createOrderBody(Order $cart) : array {
         $data = [];
         try {
+            $baseUrl = Craft::$app->sites->currentSite->getBaseUrl();
+
             $data['buyer'] = $this->getBuyerObject($cart);
             $data['currency'] = $cart->getPaymentCurrency();
             $data['gross_amount'] = (string)$cart->getTotal();
@@ -420,11 +422,11 @@ class TwoHelper extends Component
             $data['merchant_id'] = $this->pluginSettings->getMerchantId();
             $data['merchant_order_id'] = (string)$cart->getId();
             $data['merchant_urls'] = [
-                'merchant_cancel_order_url' => $cart->cancelUrl,
-                'merchant_confirmation_url' => Craft::$app->sites->currentSite->getBaseUrl() . 'commerce-two/return',
-                'merchant_edit_order_url' => $cart->cancelUrl,
-                'merchant_invoice_url' => $cart->returnUrl,
-                'merchant_order_verification_failed_url' => Craft::$app->sites->currentSite->getBaseUrl() . 'commerce-two/return',
+                'merchant_cancel_order_url' => $baseUrl . $cart->cancelUrl,
+                'merchant_confirmation_url' => $baseUrl . 'commerce-two/return',
+                'merchant_edit_order_url' => $baseUrl . $cart->cancelUrl,
+                'merchant_invoice_url' => $baseUrl . $cart->returnUrl,
+                'merchant_order_verification_failed_url' => $baseUrl . 'commerce-two/return',
             ];
             $data['billing_address'] = $this->getBillingAddress($cart);
             $data['shipping_address'] = $this->getShippingAddress($cart);
