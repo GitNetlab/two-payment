@@ -37,7 +37,7 @@ class AuthorizeRequest extends BaseRequest
             ]);
             return $this->response = new AuthorizeResponse($this, json_decode($httpResponse->getBody()->getContents()), $httpResponse->getStatusCode(), $this->cart);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while sending authorize order data to Two! Error: {$e->getMessage()}");
             throw $e;
         }
     }

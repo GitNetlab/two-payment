@@ -33,7 +33,7 @@ class CaptureRequest extends BaseRequest
                 'X-API-KEY' => $data['password']
             ]);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while sending capture order data to Two! Error: {$e->getMessage()}");
             throw $e;
         }
         return $this->response = new CaptureResponse($this, json_decode($httpResponse->getBody()->getContents()), $httpResponse->getStatusCode(), $this->order);

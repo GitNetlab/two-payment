@@ -92,7 +92,7 @@ class BaseRequest extends AbstractRequest
                 ];
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating line item data in BaseRequest! Error: {$e->getMessage()}");
             throw $e;
         }
         return $lineItems;

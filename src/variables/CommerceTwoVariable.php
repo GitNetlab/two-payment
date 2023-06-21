@@ -30,7 +30,7 @@ class CommerceTwoVariable
             ]]);
             return Craft::$app->elements->saveElement($cart);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while setting company on cart! Error: {$e->getMessage()}");
             throw $e;
         }
     }

@@ -40,7 +40,7 @@ class CreateOrderRequest extends BaseRequest
             $data['billing_address'] = $this->getBillingAddress();
             $data['shipping_address'] = $this->getShippingAddress();
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while getting create order - order data from Two! Error: {$e->getMessage()}");
             throw $e;
         }
         return $data;
@@ -55,7 +55,7 @@ class CreateOrderRequest extends BaseRequest
             ], json_encode($data));
             return $this->response = new CreateOrderResponse($this, json_decode($httpResponse->getBody()->getContents()), $httpResponse->getStatusCode(), $this->cart);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while sending create order - order data to Two! Error: {$e->getMessage()}");
             throw $e;
         }
     }

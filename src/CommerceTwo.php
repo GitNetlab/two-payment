@@ -23,6 +23,7 @@ use craft\fields\Lightswitch;
 use craft\fields\PlainText;
 use craft\helpers\FieldHelper;
 use craft\helpers\StringHelper;
+use craft\log\MonologTarget;
 use craft\models\FieldGroup;
 use craft\models\FieldLayoutTab;
 use craft\records\Field;
@@ -197,6 +198,43 @@ class CommerceTwo extends Plugin
             __METHOD__
         );
 
+        $this->_registerLogTarget();
+    }
+
+    /**
+     * Logs an informational message to our custom log target.
+     */
+    public static function info(string $message): void
+    {
+        Craft::info($message, 'commerce-two');
+    }
+
+    /**
+     * Logs an error message to our custom log target.
+     */
+    public static function error(string $message): void
+    {
+        Craft::error($message, 'commerce-two');
+    }
+
+    /**
+     * Registers a custom log target, keeping the format as simple as possible.
+     */
+    private function _registerLogTarget(): void
+    {
+        Craft::getLogger()->dispatcher->targets[] = new MonologTarget([
+            'name' => 'commerce-two',
+            'categories' => ['commerce-two'],
+            'level' => LogLevel::INFO,
+            'logContext' => false,
+            'allowLineBreaks' => true,
+            'formatter' => new LineFormatter(
+                format: "%datetime% [%level_name%] %message% %context%\n",
+                dateFormat: 'Y-m-d H:i:s',
+                allowInlineLineBreaks: false,
+                ignoreEmptyContextAndExtra: true,
+            ),
+        ]);
     }
 
     // Protected Methods

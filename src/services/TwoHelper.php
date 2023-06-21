@@ -96,7 +96,14 @@ class TwoHelper extends Component
                 throw new \Exception("Request failed with status code: " . $httpResponse->getStatusCode());
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while searching for company at Two! Used parameters: (" .
+                json_encode([
+                    'name' => $name,
+                    'countryCode' => $countryCode,
+                    'limit' => $limit,
+                    'offset' => $offset
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
     }
@@ -127,7 +134,12 @@ class TwoHelper extends Component
                 throw new \Exception("Request failed with status code: " . $httpResponse->getStatusCode());
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while querying company address from Two! Used parameters: (" .
+                json_encode([
+                    'companyId' => $companyId,
+                    'countryCode' => $countryCode,
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
     }
@@ -165,7 +177,11 @@ class TwoHelper extends Component
 
             return $intent->approved;
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating order intent! Used parameters: (" .
+                json_encode([
+                    'body' => $data ?? null
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
     }
@@ -205,7 +221,11 @@ class TwoHelper extends Component
 
             return $createOrderResponse->status === 'APPROVED';
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating order! Used parameters: (" .
+                json_encode([
+                    'body' => $data ?? null
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
     }
@@ -257,7 +277,11 @@ class TwoHelper extends Component
                 throw new \Exception("Wrong status code from Two! ". json_encode( $resp->getBody()->getContents() ));
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while capturing order! Used parameters: (" .
+                json_encode([
+                    'responseBody' => $responseBody ?? null
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
         return false;
@@ -311,7 +335,11 @@ class TwoHelper extends Component
                 throw new \Exception("Wrong status code from Two! ". json_encode( $resp->getBody()->getContents() ));
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while authorizing order! Used parameters: (" .
+                json_encode([
+                    'responseBody' => $responseBody ?? null
+                ])
+                . ") Error: {$e->getMessage()}");
             throw $e;
         }
         return false;
@@ -342,7 +370,7 @@ class TwoHelper extends Component
                 throw new \Exception("Wrong status code from Two! ". json_encode( $resp->getBody()->getContents() ));
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while fetching order from Two! Used parameters: (" . json_encode(['cartId' => $cart->getId() ?? null]) . ") Error: {$e->getMessage()}");
             throw $e;
         }
         return false;
@@ -395,7 +423,7 @@ class TwoHelper extends Component
             $data['line_items'] = $this->getLineItems($cart);
             $data['merchant_id'] = (string)$this->pluginSettings->getMerchantId();
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating order intent body! Used parameters: (" . json_encode(['data' => $data]) . ") Error: {$e->getMessage()}");
             throw $e;
         } finally {
             return $data;
@@ -431,7 +459,7 @@ class TwoHelper extends Component
             $data['billing_address'] = $this->getBillingAddress($cart);
             $data['shipping_address'] = $this->getShippingAddress($cart);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating order body! Used parameters: (" . json_encode(['data' => $data]) . ") Error: {$e->getMessage()}");
             throw $e;
         }
         return $data;
@@ -484,7 +512,7 @@ class TwoHelper extends Component
                 ];
             }
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while creating Line Items for order! Error: {$e->getMessage()}");
             throw $e;
         }
         return $lineItems;

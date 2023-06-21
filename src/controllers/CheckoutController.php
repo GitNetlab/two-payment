@@ -70,7 +70,7 @@ class CheckoutController extends Controller
             $result = TwoHelper::getInstance()->searchCompany($companyName, $countryCode, $limit, $offset);
             return $this->asJson(['success' => true, 'items' => $result]);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while searching for company! Error: {$e->getMessage()}");
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }
@@ -91,7 +91,7 @@ class CheckoutController extends Controller
             $result = TwoHelper::getInstance()->getCompanyAddress($companyId, $countryCode);
             return $this->asJson(['success' => true, 'address' => $result]);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while querying company address! Error: {$e->getMessage()}");
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }
@@ -127,7 +127,7 @@ class CheckoutController extends Controller
             ]);
             return $this->asJson(['success' => true, 'approved' => $intent->approved, 'decline_reason' => $intent->decline_reason]);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while checking if company is allowed for payment! Error: {$e->getMessage()}");
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }
@@ -160,7 +160,7 @@ class CheckoutController extends Controller
             $saved = Craft::$app->elements->saveElement($cart);
             return $this->asJson(['success' => $saved]);
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while setting company information on cart! Error: {$e->getMessage()}");
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }
@@ -290,6 +290,7 @@ class CheckoutController extends Controller
             }
             return $this->asJson(['success' => $saved]);
         } catch (\Exception $e) {
+            CommerceTwo::error("Error while setting billing and shipping addresses on cart! Error: {$e->getMessage()}");
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }

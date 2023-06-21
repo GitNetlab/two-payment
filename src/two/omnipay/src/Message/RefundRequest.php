@@ -41,7 +41,7 @@ class RefundRequest extends BaseRequest
                 'line_items' => $data['line_items']
             ]));
         } catch (\Exception $e) {
-            CommerceTwo::log($e->getMessage(), Logger::LEVEL_ERROR);
+            CommerceTwo::error("Error while sending refund order data to Two! Error: {$e->getMessage()}");
             throw $e;
         }
         return $this->response = new RefundResponse($this, json_decode($httpResponse->getBody()->getContents()), $httpResponse->getStatusCode(), $this->order);
