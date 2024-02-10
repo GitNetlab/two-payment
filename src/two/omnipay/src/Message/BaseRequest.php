@@ -72,7 +72,7 @@ class BaseRequest extends AbstractRequest
                     'tax_class_name' => $taxCategory ? $taxCategory->name :  'NO TAX',
                     'tax_rate' => (string)(count($taxRates) ? number_format($taxRates[0]->rate, 3) : 0),
                     'type' => 'PHYSICAL',
-                    'unit_price' => (string)$lineItem->getPrice()
+                    'unit_price' => (string)$lineItem->getSalePrice(),
                 ];
             }
             if( $cart->getTotalShippingCost() ) {
