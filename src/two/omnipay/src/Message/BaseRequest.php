@@ -76,20 +76,47 @@ class BaseRequest extends AbstractRequest
                 ];
             }
             if( $cart->getTotalShippingCost() ) {
-                $lineItems[] = [
-                    'name' => 'Shipping',
-                    'quantity' => 1,
-                    'description' => 'Shipping fee',
-                    'gross_amount' => (string)$cart->getTotalShippingCost(),
-                    'net_amount' => (string)$cart->getTotalShippingCost(),
-                    'discount' => '0',
-                    'quantity_unit' => 'pcs',
-                    'tax_amount' => '0',
-                    'tax_class_name' => 'NO TAX',
-                    'tax_rate' => '0',
-                    'type' => 'SHIPPING_FEE',
-                    'unit_price' => (string)$cart->getTotalShippingCost()
-                ];
+                $shippingAdjustment = null;
+                $shippingTaxAdjustment = null;
+                foreach ($cart->adjustments as $adjustment) {
+                    if ($adjustment->type === 'shipping') {
+                        $shippingAdjustment = $adjustment;
+                    }
+                    if ($adjustment->type === 'tax' && $adjustment->lineItemId === null) {
+                        $shippingTaxAdjustment = $adjustment;
+                    }
+                }
+                if ($shippingAdjustment && $shippingTaxAdjustment) {
+                    $lineItems []= [
+                        'name' => 'Shipping',
+                        'quantity' => 1,
+                        'description' => 'Shipping fee',
+                        'gross_amount' => (string) ($shippingAdjustment->amount + $shippingTaxAdjustment->amount),
+                        'net_amount' => (string) $shippingAdjustment->amount,
+                        'discount' => '0',
+                        'quantity_unit' => 'pcs',
+                        'tax_amount' => (string) $shippingTaxAdjustment->amount,
+                        'tax_class_name' => $shippingTaxAdjustment->name,
+                        'tax_rate' => number_format( ((float) $shippingTaxAdjustment->description) / 100, 3),
+                        'type' => 'SHIPPING_FEE',
+                        'unit_price' => (string) $shippingAdjustment->amount,
+                    ];
+                } else {
+                    $lineItems []= [
+                        'name' => 'Shipping',
+                        'quantity' => 1,
+                        'description' => 'Shipping fee',
+                        'gross_amount' => (string)$cart->getTotalShippingCost(),
+                        'net_amount' => (string)$cart->getTotalShippingCost(),
+                        'discount' => '0',
+                        'quantity_unit' => 'pcs',
+                        'tax_amount' => '0',
+                        'tax_class_name' => 'NO TAX',
+                        'tax_rate' => '0',
+                        'type' => 'SHIPPING_FEE',
+                        'unit_price' => (string)$cart->getTotalShippingCost()
+                    ];
+                }
             }
         } catch (\Exception $e) {
             CommerceTwo::error("Error while creating line item data in BaseRequest! Error: {$e->getMessage()}");
