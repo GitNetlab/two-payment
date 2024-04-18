@@ -87,6 +87,7 @@ class TwoHelper extends Component
 
             $limit = $limit > 100 || $limit < 0 ? 30 : $limit;
             $offset = $offset < 0 ? 0 : $offset;
+            $name = urlencode($name);
 
             $httpResponse = $this->client->request('GET', "https://$countryCode.search.two.inc/search?limit=$limit&offset=$offset&q=$name");
             if( $httpResponse->getStatusCode() === 200 ) {
