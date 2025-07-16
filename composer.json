@@ -24,7 +24,7 @@
     "require": {
         "craftcms/cms": "^5.0.0",
         "craftcms/commerce": "^5.0.0",
-        "craftcms/commerce-omnipay": "^5.0.0",
+        "craftcms/commerce-omnipay": "^4.2.0",
         "php": "^8.2|^9.0"
     },
     "autoload": {
